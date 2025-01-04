@@ -77,8 +77,9 @@ import { Vector3 } from 'three/webgpu';
     points[4].position.y = .1
     points[4].position.z = .75
 
+    const pointCount = 500
     const curve = new THREE.CatmullRomCurve3(points.map(i => i.position));
-    const segPoints = curve.getPoints(200);
+    const segPoints = curve.getPoints(pointCount);
     const pointsGeo = new THREE.BufferGeometry().setFromPoints(segPoints);
     const pointsMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     const curveObject = new THREE.Line(pointsGeo, pointsMaterial);
@@ -96,10 +97,7 @@ import { Vector3 } from 'three/webgpu';
     window.addEventListener('wheel', e => {
         segPointsIndex = ~~(segPointsIndex + e.deltaY / power)
         if (segPointsIndex < 0) segPointsIndex = 0
-        if (segPointsIndex > 200) segPointsIndex = 200
-        umesh.position.x = segPoints[segPointsIndex].x
-        umesh.position.y = segPoints[segPointsIndex].y
-        umesh.position.z = segPoints[segPointsIndex].z
+        if (segPointsIndex > pointCount) segPointsIndex = pointCount
     })
 
     //建構環境光源
@@ -146,8 +144,9 @@ import { Vector3 } from 'three/webgpu';
     // materialFolder.add(material, 'bumpScale', 0, 100)
 
     function animate() {
-        // cube.rotation.x += 0.01;
-        // cube.rotation.y += 0.01;
+        umesh.position.x += (segPoints[segPointsIndex].x - umesh.position.x) / 10
+        umesh.position.y += (segPoints[segPointsIndex].y - umesh.position.y) / 10
+        umesh.position.z += (segPoints[segPointsIndex].z - umesh.position.z) / 10
         renderer.render(scene, camera);
     }
 
@@ -156,8 +155,6 @@ import { Vector3 } from 'three/webgpu';
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        // uilayer.width = window.innerWidth
-        // uilayer.height = window.innerHeight
     }
     onWindowResize()
 
